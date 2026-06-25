@@ -55,7 +55,7 @@ export function Preloader() {
         className={`
           flex flex-col items-center gap-6
           transition-all duration-500
-          brightness-0 opacity-80 hover:opacity-100 transition-opacity w-fit
+        hover:opacity-100 transition-opacity w-fit
           ${hiding ? "scale-95 opacity-0" : "scale-100 opacity-100"}
         `}
         style={{ transitionDuration: "500ms" }}
