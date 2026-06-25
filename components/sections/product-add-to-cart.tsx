@@ -271,7 +271,6 @@ const ProductBuySection = ({ product }: Props) => {
           hasSizes={product.sizes?.length > 0}
           hasColors={product.colors?.length > 0}
           className="py-3"
-          variant="default"
         />
         
         {isInCart && (
