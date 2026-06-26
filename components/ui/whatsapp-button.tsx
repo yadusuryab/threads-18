@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP || "https://wa.me/919048466582";
-const NUMBER = "+91 9048466582";
+const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP || "https://wa.me/918139865988";
+const NUMBER = "+91 8139865988";
 
 export function WhatsAppButton() {
   const [phase, setPhase] = useState<"hidden" | "expanded" | "icon">("hidden");

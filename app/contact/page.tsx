@@ -27,8 +27,8 @@ const CHANNELS = [
       </svg>
     ),
     label: "Phone / WhatsApp",
-    value: "+91 9048466582",
-    href: "https://wa.me/919048466582",
+    value: "+91 8139865988",
+    href: "https://wa.me/918139865988",
     hint: "Mon – Sat, 9 am – 8 pm IST",
   },
   {
@@ -377,7 +377,7 @@ export default function ContactPage() {
                       <p className="text-[10.5px] text-center leading-relaxed" style={{ color: "rgba(0,0,0,0.3)" }}>
                         Or reach us faster on{" "}
                         <a
-                          href="https://wa.me/919048466582"
+                          href="https://wa.me/918139865988"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-bold transition-opacity hover:opacity-70"
