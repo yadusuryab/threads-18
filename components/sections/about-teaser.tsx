@@ -28,6 +28,8 @@ type AboutTeaserProps = {
   body?: string;
   ctaText?: string;
   ctaHref?: string;
+  whatsappGroupUrl?: string;
+  whatsappGroupLabel?: string;
   stat1?: { value: string; label: string };
   stat2?: { value: string; label: string };
   stat3?: { value: string; label: string };
@@ -41,6 +43,8 @@ export default function AboutTeaser({
   body = "Every jersey we carry is official, licensed, and match-ready. We source directly from federations and clubs — so you get the real thing, not a replica of a replica.",
   ctaText = "Our Story",
   ctaHref = "/about",
+  whatsappGroupUrl = "https://chat.whatsapp.com/IVe2nZpMgdA6KISezSikZn",
+  whatsappGroupLabel = "Join our WhatsApp Group",
   stat1 = { value: "200+", label: "Clubs & Teams" },
   stat2 = { value: "50k+", label: "Jerseys Sold" },
   stat3 = { value: "100%", label: "Authentic" },
@@ -152,13 +156,15 @@ export default function AboutTeaser({
                 {body}
               </p>
 
-              {/* CTA */}
+              {/* CTAs */}
               <div
+                className="flex flex-col gap-4"
                 style={{
                   opacity: visible ? 1 : 0,
                   transition: "opacity 0.6s ease 0.46s",
                 }}
               >
+                {/* Existing "Our Story" CTA */}
                 <Link
                   href={ctaHref}
                   className="group inline-flex items-center gap-3"
@@ -192,6 +198,64 @@ export default function AboutTeaser({
                     </svg>
                   </span>
                 </Link>
+
+                {/* WhatsApp Group CTA */}
+                <a
+                  href={whatsappGroupUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-3"
+                >
+                  {/* WhatsApp icon */}
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="flex-shrink-0"
+                  >
+                    <path
+                      d="M20.472 3.528A11.955 11.955 0 0012.005 0C5.444 0 .103 5.34.1 11.902c0 2.097.546 4.143 1.588 5.946L0 24l6.304-1.654a11.942 11.942 0 005.694 1.447h.005c6.557 0 11.898-5.34 11.9-11.903a11.837 11.837 0 00-3.431-8.362z"
+                      fill="#25D366"
+                    />
+                    <path
+                      d="M12.005 21.793h-.004a9.918 9.918 0 01-5.056-1.384l-.363-.215-3.76.986 1.003-3.662-.236-.376a9.895 9.895 0 01-1.518-5.24C2.073 6.46 6.535 2 12.009 2a9.877 9.877 0 017.01 2.907 9.858 9.858 0 012.899 7.009c-.003 5.468-4.465 9.877-9.913 9.877z"
+                      fill="#25D366"
+                    />
+                    <path
+                      d="M17.006 14.382c-.296-.148-1.75-.864-2.022-.963-.272-.098-.47-.148-.669.148-.198.296-.768.963-.942 1.161-.173.197-.347.222-.643.074-.297-.148-1.252-.461-2.384-1.47-.881-.786-1.476-1.756-1.649-2.052-.173-.297-.018-.457.13-.604.133-.133.296-.347.445-.52.148-.173.197-.297.296-.495.099-.198.05-.372-.025-.52-.074-.148-.669-1.612-.916-2.208-.241-.579-.486-.5-.669-.51l-.569-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.48 0 1.463 1.065 2.876 1.213 3.074.148.198 2.095 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.693.248-1.287.173-1.412-.074-.124-.272-.198-.57-.347z"
+                      fill="white"
+                    />
+                  </svg>
+                  <span
+                    className="text-[10px] font-bold tracking-[0.22em] uppercase transition-colors duration-200"
+                    style={{ color: "rgba(255,255,255,0.55)" }}
+                  >
+                    {whatsappGroupLabel}
+                  </span>
+                  <span
+                    className="relative flex items-center"
+                    style={{ width: 32 }}
+                  >
+                    <span
+                      className="block h-px transition-all duration-300 group-hover:w-10"
+                      style={{
+                        background: "rgba(255,255,255,0.25)",
+                        width: 24,
+                      }}
+                    />
+                    <svg
+                      width="6"
+                      height="10"
+                      viewBox="0 0 6 10"
+                      fill="none"
+                      className="absolute right-0 transition-transform duration-300 group-hover:translate-x-1"
+                    >
+                      <path d="M1 1l4 4-4 4" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
 
