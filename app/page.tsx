@@ -28,7 +28,7 @@ export default async function Home() {
       <MarqueeStrip />
       <BrandsMarquee />
        {/* ── BOGO Offer Banner ── */}
-       <Jersey3D/>
+       {/* <Jersey3D/> */}
     {/* <OfferBanner/> */}
       <BrandsGrid />
 

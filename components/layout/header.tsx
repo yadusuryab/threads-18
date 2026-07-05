@@ -8,7 +8,7 @@ import Brand from "../utils/brand";
 const NAV = [
   { name: "Home", href: "/" },
   { name: "Jerseys", href: "/products" },
-  { name: "Custom", href: "/custom" },
+  { name: "Custom", href: "/contact" },
   { name: "Policies", href: "/terms" },
 ];
 

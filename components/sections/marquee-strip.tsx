@@ -3,10 +3,10 @@
 import React from "react";
 
 const items = [
-  "Free shipping on orders paid online",
+ 
   "Handpicked fashion, curated just for you",
   "Secure checkout · 100% safe payments",
-  "Free shipping on orders paid online",
+ 
   "Handpicked fashion, curated just for you",
   "Secure checkout · 100% safe payments",
 ];
