@@ -10,10 +10,11 @@ const GREEN = "#2D5016";
 const GOLD = "#C8A84B";
 
 // ── Size Selector ──────────────────────────────────────────────
-const SizeSelector = ({ sizes, selectedSize, onSizeSelect }: {
+const SizeSelector = ({ sizes, selectedSize, onSizeSelect, onSizeGuideClick }: {
   sizes: string[];
   selectedSize: string | null;
   onSizeSelect: (size: string) => void;
+  onSizeGuideClick: () => void;
 }) => {
   if (!sizes || sizes.length === 0) return null;
 
@@ -24,6 +25,7 @@ const SizeSelector = ({ sizes, selectedSize, onSizeSelect }: {
           Size
         </label>
         <button
+          onClick={onSizeGuideClick}
           className="text-[9px] font-bold tracking-[0.2em] uppercase transition-opacity duration-200 hover:opacity-60"
           style={{ color: GOLD }}
         >
@@ -102,13 +104,62 @@ const ColorSelector = ({ colors, selectedColor, onColorSelect }: {
     </div>
   );
 };
+// ── Size Guide Modal ────────────────────────────────────────────
+// ── Size Guide Modal ────────────────────────────────────────────
+const SizeGuideModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
+  if (!isOpen) return null;
 
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.75)" }}
+      onClick={onClose}
+    >
+      <div
+        className="relative rounded-lg overflow-hidden max-w-md w-full max-h-[90vh] flex flex-col"
+        style={{
+          background: GREEN,
+          border: `1px solid ${GOLD}`,
+          boxShadow: `0 0 0 1px rgba(200,168,75,0.15), 0 20px 60px rgba(0,0,0,0.5)`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className="flex justify-between items-center px-6 py-4"
+          style={{ borderBottom: `1px solid rgba(200,168,75,0.25)` }}
+        >
+          <div className="flex items-center gap-2">
+            <span className="block w-4 h-px" style={{ background: GOLD }} />
+            <span className="text-[10px] font-bold tracking-[0.25em] uppercase" style={{ color: GOLD }}>
+              Size Guide
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-xl leading-none font-light transition-opacity hover:opacity-60"
+            style={{ color: GOLD }}
+            aria-label="Close size guide"
+          >
+            ×
+          </button>
+        </div>
+        <div className="overflow-auto p-4">
+          <img
+            src="/sizechart.jpeg"
+            alt="Size chart"
+            className="w-full h-auto rounded"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 // ── Main Component ─────────────────────────────────────────────
 const ProductDetailsClient = ({ product }: { product: any }) => {
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [openSection, setOpenSection] = React.useState("description");
-
+const [showSizeGuide, setShowSizeGuide] = React.useState(false);
   const availableSizes = product.sizes || [];
   const availableColors = product.colors || [];
 
@@ -184,8 +235,14 @@ const ProductDetailsClient = ({ product }: { product: any }) => {
         )}
       </div>
 
-      <SizeSelector sizes={availableSizes} selectedSize={selectedSize} onSizeSelect={setSelectedSize} />
-      <ColorSelector colors={availableColors} selectedColor={selectedColor} onColorSelect={setSelectedColor} />
+<SizeSelector
+  sizes={availableSizes}
+  selectedSize={selectedSize}
+  onSizeSelect={setSelectedSize}
+  onSizeGuideClick={() => setShowSizeGuide(true)}
+/>      <ColorSelector colors={availableColors} selectedColor={selectedColor} onColorSelect={setSelectedColor} />
+      <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
+
 
       <div className="mt-8">
         <AddToCartButton
