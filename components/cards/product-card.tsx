@@ -8,9 +8,9 @@ import { ArrowUpRight, Heart } from 'lucide-react'
 type Props = {
   id: string
   name: string
-  imageUrl: string
+  imageUrl?: string // Made optional with fallback
   price: number
-  salesPrice: number
+  salesPrice?: number // Made optional
   isNew?: boolean
   isBestSeller?: boolean
   rating?: number
@@ -29,49 +29,63 @@ function ProductCard({
   const [wished, setWished] = useState(false)
   const [wishAnim, setWishAnim] = useState(false)
 
-  // Add safe checks for prices
-  const safePrice = price ?? 0
-  const safeSalesPrice = salesPrice ?? 0
+  // Safe defaults for all values
+  const safeId = id || 'product-placeholder'
+  const safeName = name || 'Product Name'
+  const safeImageUrl = imageUrl || '/placeholder-product.jpg' // Make sure this image exists
+  const safePrice = price || 0
+  const safeSalesPrice = salesPrice ?? safePrice // Default to full price if no sales price
   
   const hasDiscount = safeSalesPrice < safePrice
   const discountPct = hasDiscount 
     ? Math.round(((safePrice - safeSalesPrice) / safePrice) * 100) 
     : 0
 
-  // Safe formatting function
+  // Safe formatting function with proper fallback
   const formatPrice = (value: number) => {
-    return value?.toLocaleString() ?? '0'
+    if (!value && value !== 0) return '0'
+    return value.toLocaleString('en-IN', {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0
+    })
   }
 
   const toggleWish = (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent Link navigation
     setWished((w) => !w)
     setWishAnim(true)
     setTimeout(() => setWishAnim(false), 400)
   }
 
   return (
-    <Link href={`/product/${id?.toLowerCase() ?? '#'}`} passHref>
+    <Link href={`/product/${safeId.toLowerCase()}`} passHref>
       <motion.div
-        className="group flex flex-col bg-transparent"
+        className="group flex flex-col bg-transparent cursor-pointer"
         whileHover={{ y: -3 }}
         transition={{ type: 'spring', stiffness: 380, damping: 28 }}
       >
         {/* ── Image container ── */}
         <div className="relative w-full aspect-[3/4] rounded overflow-hidden bg-gray-50 mb-2.5">
 
-          {/* Image with Ken Burns */}
+          {/* Image with Ken Burns effect */}
           <Image
-            src={imageUrl || '/placeholder.jpg'} // Add fallback image
-            alt={name || 'Product'}
+            src={safeImageUrl}
+            alt={safeName}
             fill
             className="object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
             sizes="(max-width: 768px) 50vw, 25vw"
+            priority={false}
+            onError={(e) => {
+              // Fallback if image fails to load
+              const target = e.target as HTMLImageElement
+              target.src = '/placeholder-product.jpg'
+            }}
           />
 
-          {/* Subtle gradient overlay — deepens on hover */}
+          {/* Subtle gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent
-            opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+            opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none" />
 
           {/* ── Wishlist button ── */}
           <button
@@ -83,7 +97,7 @@ function ProductCard({
               shadow-sm border border-black/[0.06]
               opacity-0 group-hover:opacity-100
               translate-y-[-4px] group-hover:translate-y-0
-              transition-all duration-300"
+              transition-all duration-300 hover:bg-white"
             style={{
               transform: wishAnim ? 'scale(1.3)' : undefined,
               transition: wishAnim ? 'transform 0.15s ease' : undefined,
@@ -110,7 +124,7 @@ function ProductCard({
                 Best seller
               </span>
             )}
-            {hasDiscount && (
+            {hasDiscount && discountPct > 0 && (
               <span className="text-[9px] font-semibold tracking-[0.1em] uppercase
                 bg-black/80 text-white px-2 py-0.5 rounded-sm">
                 -{discountPct}%
@@ -118,10 +132,10 @@ function ProductCard({
             )}
           </div>
 
-          {/* ── Quick view pill — slides up from bottom ── */}
+          {/* ── Quick view pill ── */}
           <div className="absolute bottom-0 left-0 right-0 flex justify-center
             translate-y-full group-hover:translate-y-0
-            transition-transform duration-300 ease-out pb-3">
+            transition-transform duration-300 ease-out pb-3 pointer-events-none">
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5
               bg-white/95 backdrop-blur-sm rounded-full
               text-[10px] font-semibold tracking-[0.12em] uppercase text-black
@@ -137,8 +151,19 @@ function ProductCard({
           <h3 className="text-[11px] sm:text-xs font-medium uppercase tracking-[0.08em]
             text-black/80 leading-snug line-clamp-1
             group-hover:text-black transition-colors duration-200">
-            {name || 'Unnamed Product'}
+            {safeName}
           </h3>
+
+          {/* Rating - optional but good to have */}
+          {rating > 0 && (
+            <div className="flex items-center gap-1 mt-0.5">
+              <div className="flex text-[10px] text-yellow-400">
+                {'★'.repeat(Math.min(Math.round(rating), 5))}
+                {'☆'.repeat(Math.max(0, 5 - Math.round(rating)))}
+              </div>
+              <span className="text-[9px] text-black/40">({rating})</span>
+            </div>
+          )}
 
           {/* Price row */}
           <div className="flex items-center gap-1.5 mt-0.5">
@@ -150,6 +175,11 @@ function ProductCard({
                 <span className="text-[10px] text-black/35 line-through font-normal">
                   ₹{formatPrice(safePrice)}
                 </span>
+                {discountPct > 0 && (
+                  <span className="text-[9px] font-medium text-green-600 ml-auto">
+                    Save {discountPct}%
+                  </span>
+                )}
               </>
             ) : (
               <span className="text-xs font-semibold text-black">
