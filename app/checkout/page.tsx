@@ -95,39 +95,42 @@ function CheckoutInner() {
     ? "Kerala: 2–3 days · Outside Kerala: 6–7 days"
     : "Delivery in 7 days";
 
-  const buildMessage = (data: FormData) => {
+ const buildMessage = (data: FormData) => {
     const lines: string[] = [];
-    lines.push(`🛍️ *New Order — ${APP_NAME}*`);
+    lines.push(`*NEW ORDER — ${APP_NAME}*`);
     lines.push(`━━━━━━━━━━━━━━━━━`);
-    if (isOffer) lines.push(`🎁 *BOGO OFFER — Buy 1 Get 1 Free*`);
-    lines.push(`\n📦 *Products:*`);
+    if (isOffer) lines.push(`*BOGO OFFER — Buy 1 Get 1 Free*`);
+    lines.push(`\nPRODUCT DETAILS:`);
     cart.forEach((item, i) => {
-      const freeLabel = isOffer && i === 1 ? " *(FREE)*" : "";
+      const freeLabel = isOffer && i === 1 ? " (FREE)" : "";
       lines.push(`${i + 1}. ${item.name}${freeLabel} × ${item.cartQty}`);
-      if (item.size)  lines.push(`   📏 Size: ${item.size}`);
-      if (item.color) lines.push(`   🎨 Colour: ${item.color}`);
-      if (!isOffer)   lines.push(`   💵 ₹${item.salesPrice * item.cartQty}`);
-      if (APP_URL) lines.push(`   🔗 ${APP_URL}/product/${item.slug || item._id}`);
+      if (item.size)  lines.push(`   Size: ${item.size}`);
+      if (item.color) lines.push(`   Colour: ${item.color}`);
+      if (!isOffer)   lines.push(`   Price: ₹${item.salesPrice * item.cartQty}`);
+      if (APP_URL) lines.push(`   Link: ${APP_URL}/product/${item.slug || item._id}`);
     });
-    lines.push(`\n💰 *Order Total:*`);
+    
+    lines.push(`\nPRICE DETAILS:`);
     if (isOffer) {
       lines.push(`Offer price: ₹1,499`);
       lines.push(paymentMethod === "online" ? "Shipping: Free" : `COD fee: ₹${OFFER_COD_FEE}`);
-      lines.push(`*Total: ₹${total}*`);
+      lines.push(`Total: ₹${total}`);
     } else {
       lines.push(`Subtotal: ₹${rawSubtotal}`);
       lines.push(shipping === 0 ? "Shipping: Free" : `COD charges: ₹${shipping}`);
-      lines.push(`*Total: ₹${total}*`);
+      lines.push(`Total: ₹${total}`);
     }
-    lines.push(`💳 Payment: ${paymentMethod === "online" ? "Online (UPI/Card)" : "Cash on Delivery"}`);
-    lines.push(`\n👤 *Customer:*`);
+    lines.push(`Payment: ${paymentMethod === "online" ? "Online (UPI/Card)" : "Cash on Delivery"}`);
+    
+    lines.push(`\nCUSTOMER DETAILS:`);
     lines.push(`Name: ${data.customerName}`);
     lines.push(`Phone: ${data.phoneNumber}`);
-    if (data.alternatePhone) lines.push(`Alt: ${data.alternatePhone}`);
+    if (data.alternatePhone) lines.push(`Alternate: ${data.alternatePhone}`);
     if (data.instagramId)    lines.push(`Instagram: ${data.instagramId}`);
-    lines.push(`\n📍 *Address:*`);
+    
+    lines.push(`\nADDRESS:`);
     lines.push(data.address);
-    lines.push(`${data.district}, ${data.state} — ${data.pincode}`);
+    lines.push(`${data.district}, ${data.state} - ${data.pincode}`);
     if (data.landmark) lines.push(`Landmark: ${data.landmark}`);
     lines.push(`\n━━━━━━━━━━━━━━━━━`);
     return encodeURIComponent(lines.join("\n"));
