@@ -60,6 +60,8 @@ const inputCls = (err?: string) =>
 
 const OFFER_PRICE   = 1499;
 const OFFER_COD_FEE = 150;
+const KERALA_SHIPPING     = 50;
+const NON_KERALA_SHIPPING = 60;
 const WHATSAPP_NUMBER = process.env.NEXT_PUBLIC_PHONE ?? "";
 const APP_URL         = process.env.NEXT_PUBLIC_BASE_URL ?? "";
 const APP_NAME        = process.env.NEXT_PUBLIC_APP_NAME ?? "18 Threads";
@@ -72,9 +74,13 @@ function CheckoutInner() {
   const router       = useRouter();
   const searchParams = useSearchParams();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(checkoutSchema),
   });
+
+  const stateValue = watch("state") || "";
+  const isKerala   = stateValue.trim().toLowerCase() === "kerala";
+  const shipping   = isKerala ? KERALA_SHIPPING : NON_KERALA_SHIPPING;
 
   useEffect(() => {
     const offerFlag = searchParams.get("offer") === "true";
@@ -88,51 +94,57 @@ function CheckoutInner() {
 
   const rawSubtotal = cart.reduce((a, i) => a + i.salesPrice * i.cartQty, 0);
   const subtotal    = isOffer ? OFFER_PRICE : rawSubtotal;
-  const shipping    = paymentMethod === "online" ? 0 : isOffer ? OFFER_COD_FEE : 150;
   const total       = subtotal + shipping;
 
-  const deliveryTime = paymentMethod === "online"
-    ? "Kerala: 2–3 days · Outside Kerala: 6–7 days"
-    : "Delivery in 7 days";
+  const deliveryTime = "Delivery in 7 days";
 
- const buildMessage = (data: FormData) => {
+  const buildMessage = (data: FormData) => {
     const lines: string[] = [];
     lines.push(`*NEW ORDER — ${APP_NAME}*`);
-    lines.push(`━━━━━━━━━━━━━━━━━`);
-    if (isOffer) lines.push(`*BOGO OFFER — Buy 1 Get 1 Free*`);
-    lines.push(`\nPRODUCT DETAILS:`);
-    cart.forEach((item, i) => {
-      const freeLabel = isOffer && i === 1 ? " (FREE)" : "";
-      lines.push(`${i + 1}. ${item.name}${freeLabel} × ${item.cartQty}`);
-      if (item.size)  lines.push(`   Size: ${item.size}`);
-      if (item.color) lines.push(`   Colour: ${item.color}`);
-      if (!isOffer)   lines.push(`   Price: ₹${item.salesPrice * item.cartQty}`);
-      if (APP_URL) lines.push(`   Link: ${APP_URL}/product/${item.slug || item._id}`);
-    });
-    
-    lines.push(`\nPRICE DETAILS:`);
-    if (isOffer) {
-      lines.push(`Offer price: ₹1,499`);
-      lines.push(paymentMethod === "online" ? "Shipping: Free" : `COD fee: ₹${OFFER_COD_FEE}`);
-      lines.push(`Total: ₹${total}`);
-    } else {
-      lines.push(`Subtotal: ₹${rawSubtotal}`);
-      lines.push(shipping === 0 ? "Shipping: Free" : `COD charges: ₹${shipping}`);
-      lines.push(`Total: ₹${total}`);
-    }
-    lines.push(`Payment: ${paymentMethod === "online" ? "Online (UPI/Card)" : "Cash on Delivery"}`);
-    
-    lines.push(`\nCUSTOMER DETAILS:`);
-    lines.push(`Name: ${data.customerName}`);
-    lines.push(`Phone: ${data.phoneNumber}`);
-    if (data.alternatePhone) lines.push(`Alternate: ${data.alternatePhone}`);
-    if (data.instagramId)    lines.push(`Instagram: ${data.instagramId}`);
-    
-    lines.push(`\nADDRESS:`);
+    if (isOffer) lines.push(`_BOGO Offer — Buy 1 Get 1 Free_`);
+    lines.push(``);
+
+    lines.push(`*Customer*`);
+    lines.push(data.customerName);
+    lines.push(`${data.phoneNumber}${data.alternatePhone ? `  |  ${data.alternatePhone}` : ""}`);
+    if (data.instagramId) lines.push(data.instagramId);
+    lines.push(``);
+
+    lines.push(`*Delivery Address*`);
     lines.push(data.address);
     lines.push(`${data.district}, ${data.state} - ${data.pincode}`);
-    if (data.landmark) lines.push(`Landmark: ${data.landmark}`);
-    lines.push(`\n━━━━━━━━━━━━━━━━━`);
+    if (data.landmark) lines.push(`_Landmark: ${data.landmark}_`);
+    lines.push(``);
+
+    lines.push(`*Product Details*`);
+    cart.forEach((item, i) => {
+      const freeLabel = isOffer && i === 1 ? " _(FREE)_" : "";
+      lines.push(`${i + 1}. *${item.name}*${freeLabel}  x${item.cartQty}`);
+      const attrs = [
+        item.size ? `Size: ${item.size}` : null,
+        item.color ? `Colour: ${item.color}` : null,
+      ].filter(Boolean).join("  |  ");
+      if (attrs) lines.push(`   ${attrs}`);
+      if (!isOffer) lines.push(`   Price: ₹${item.salesPrice * item.cartQty}`);
+      if (APP_URL) lines.push(`   ${APP_URL}/product/${item.slug || item._id}`);
+    });
+    lines.push(``);
+
+    lines.push(`*Price Details*`);
+    if (isOffer) {
+      lines.push(`Offer price: ₹1,499`);
+      lines.push(`Shipping charges: ₹${shipping}`);
+      if (paymentMethod === "cod") lines.push(`COD fee: ₹${OFFER_COD_FEE}`);
+    } else {
+      lines.push(`Subtotal: ₹${rawSubtotal}`);
+      lines.push(`Shipping charges: ₹${shipping}`);
+      if (paymentMethod === "cod") lines.push(`COD charges: ₹150`);
+    }
+    lines.push(`*Total: ₹${total}*`);
+    lines.push(`Payment: ${paymentMethod === "online" ? "Online (UPI/Card)" : "Cash on Delivery"}`);
+
+    lines.push(``);
+    lines.push(`_Thank you for shopping with ${APP_NAME}!_`);
     return encodeURIComponent(lines.join("\n"));
   };
 
@@ -366,11 +378,15 @@ function CheckoutInner() {
                       <span style={{ color: "rgba(255,255,255,0.7)" }}>₹1,499</span>
                     </div>
                     <div className="flex justify-between" style={{ color: "rgba(255,255,255,0.4)" }}>
-                      <span>{paymentMethod === "online" ? "Shipping" : "COD charges"}</span>
-                      <span style={{ color: paymentMethod === "online" ? GOLD : "rgba(255,255,255,0.7)", fontWeight: paymentMethod === "online" ? 700 : 400 }}>
-                        {paymentMethod === "online" ? "Free" : `₹${OFFER_COD_FEE}`}
-                      </span>
+                      <span>Shipping charges</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)" }}>₹{shipping}</span>
                     </div>
+                    {paymentMethod === "cod" && (
+                      <div className="flex justify-between" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        <span>COD fee</span>
+                        <span style={{ color: "rgba(255,255,255,0.7)" }}>₹{OFFER_COD_FEE}</span>
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
@@ -379,11 +395,15 @@ function CheckoutInner() {
                       <span style={{ color: "rgba(255,255,255,0.7)" }}>₹{rawSubtotal}</span>
                     </div>
                     <div className="flex justify-between" style={{ color: "rgba(255,255,255,0.4)" }}>
-                      <span>{paymentMethod === "online" ? "Shipping" : "COD charges"}</span>
-                      <span style={{ color: shipping === 0 ? GOLD : "rgba(255,255,255,0.7)", fontWeight: shipping === 0 ? 700 : 400 }}>
-                        {shipping === 0 ? "Free" : `₹${shipping}`}
-                      </span>
+                      <span>Shipping charges</span>
+                      <span style={{ color: "rgba(255,255,255,0.7)" }}>₹{shipping}</span>
                     </div>
+                    {paymentMethod === "cod" && (
+                      <div className="flex justify-between" style={{ color: "rgba(255,255,255,0.4)" }}>
+                        <span>COD charges</span>
+                        <span style={{ color: "rgba(255,255,255,0.7)" }}>₹150</span>
+                      </div>
+                    )}
                   </>
                 )}
 
@@ -519,7 +539,7 @@ function CheckoutInner() {
                             className="text-[9px] font-bold tracking-[0.15em] uppercase px-2 py-0.5 rounded-full"
                             style={{ background: GREEN_MID, color: GREEN }}
                           >
-                            Free shipping
+                            +₹{shipping} shipping
                           </span>
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: "rgba(0,0,0,0.4)" }}>
@@ -544,12 +564,12 @@ function CheckoutInner() {
                             className="text-[9px] font-bold tracking-[0.15em] uppercase px-2 py-0.5 rounded-full"
                             style={{ background: "rgba(200,168,75,0.12)", color: "#92400e" }}
                           >
-                            +₹{isOffer ? OFFER_COD_FEE : 150} extra
+                            +₹{isOffer ? OFFER_COD_FEE + shipping : 150 + shipping} extra
                           </span>
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: "rgba(0,0,0,0.4)" }}>
                           {isOffer
-                            ? `Total ₹${OFFER_PRICE + OFFER_COD_FEE} · ₹100 advance + rest on delivery`
+                            ? `Total ₹${OFFER_PRICE + OFFER_COD_FEE + shipping} · ₹100 advance + rest on delivery`
                             : "₹100 advance + rest on delivery"}
                         </p>
                       </div>
@@ -564,7 +584,7 @@ function CheckoutInner() {
                       <Tag size={14} style={{ color: GOLD }} className="shrink-0" />
                       <p className="text-xs" style={{ color: "#92400e" }}>
                         <span className="font-bold">Total: ₹{total}</span>
-                        {paymentMethod === "online" ? " · Free shipping included" : ` · Includes ₹${OFFER_COD_FEE} COD fee`}
+                        {paymentMethod === "online" ? ` · Includes ₹${shipping} shipping` : ` · Includes ₹${OFFER_COD_FEE + shipping} total charges`}
                       </p>
                     </div>
                   )}
