@@ -104,19 +104,19 @@ function CheckoutInner() {
     if (isOffer) lines.push(`_BOGO Offer — Buy 1 Get 1 Free_`);
     lines.push(``);
 
-    lines.push(`*Customer*`);
+    lines.push(`*CUSTOMER*`);
     lines.push(data.customerName);
     lines.push(`${data.phoneNumber}${data.alternatePhone ? `  |  ${data.alternatePhone}` : ""}`);
     if (data.instagramId) lines.push(data.instagramId);
     lines.push(``);
 
-    lines.push(`*Delivery Address*`);
+    lines.push(`*DELIVERY ADDRESS*`);
     lines.push(data.address);
     lines.push(`${data.district}, ${data.state} - ${data.pincode}`);
     if (data.landmark) lines.push(`_Landmark: ${data.landmark}_`);
     lines.push(``);
 
-    lines.push(`*Product Details*`);
+    lines.push(`*PRODUCT DETAILS*`);
     cart.forEach((item, i) => {
       const freeLabel = isOffer && i === 1 ? " _(FREE)_" : "";
       lines.push(`${i + 1}. *${item.name}*${freeLabel}  x${item.cartQty}`);
@@ -130,7 +130,7 @@ function CheckoutInner() {
     });
     lines.push(``);
 
-    lines.push(`*Price Details*`);
+    lines.push(`*PRICE DETAILS*`);
     if (isOffer) {
       lines.push(`Offer price: ₹1,499`);
       lines.push(`Shipping charges: ₹${shipping}`);
