@@ -36,11 +36,13 @@ export async function generateMetadata(
     const previousImages = (await parent).openGraph?.images || [];
     // Get first image from media array
     const firstMedia = product.media?.find((item: any) => item._type === 'image');
-    const productImage = firstMedia?.asset?.url || '';
-
+const productImage = firstMedia?.asset?.url
+  ? `${firstMedia.asset.url}?w=1200&h=630&fit=crop&auto=format`
+  : '';    console.log((productImage))
     return {
       title: `${product.name} | ${product.category?.title || 'Product'} | ${process.env.NEXT_PUBLIC_APP_NAME}`,
       description: product.description || `${product.name} - Available now at ${process.env.NEXT_PUBLIC_APP_NAME}`,
+      
       keywords: [
         product.name,
         product.category?.title || 'product',
