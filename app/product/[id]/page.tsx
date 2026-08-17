@@ -37,8 +37,9 @@ export async function generateMetadata(
     // Get first image from media array
     const firstMedia = product.media?.find((item: any) => item._type === 'image');
 const productImage = firstMedia?.asset?.url
-  ? `${firstMedia.asset.url}?w=1200&h=630&fit=crop&auto=format`
-  : '';    console.log((productImage))
+  ? `${firstMedia.asset.url}?w=1200&h=630&fit=crop&auto=format&fm=jpg&q=90`
+  : "";
+   console.log((productImage))
     return {
       title: `${product.name} | ${product.category?.title || 'Product'} | ${process.env.NEXT_PUBLIC_APP_NAME}`,
       description: product.description || `${product.name} - Available now at ${process.env.NEXT_PUBLIC_APP_NAME}`,
@@ -50,19 +51,22 @@ const productImage = firstMedia?.asset?.url
         "ecommerce",
       ].join(", "),
       openGraph: {
-        title: product.name,
-        description: product.description || `${product.name} available for purchase`,
-        url: `${process.env.NEXT_PUBLIC_BASE_URL}/product/${id}`,
-        type: "website",
-        images: productImage ? [productImage, ...previousImages] : previousImages,
-        ...(product.price && {
-          'product:price:amount': product.salesPrice || product.price,
-          'product:price:currency': 'INR',
-        }),
-        ...(productImage && {
-          'product:image': productImage,
-        }),
-      },
+  title: product.name,
+  description:
+    product.description || `${product.name} available for purchase`,
+  url: `${process.env.NEXT_PUBLIC_BASE_URL}/product/${id}`,
+  type: "website",
+  images: productImage
+    ? [
+        {
+          url: productImage,
+          width: 1200,
+          height: 630,
+          alt: product.name,
+        },
+      ]
+    : [],
+},
       twitter: {
         card: "summary_large_image",
         title: product.name,
