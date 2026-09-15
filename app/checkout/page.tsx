@@ -1,7 +1,7 @@
 // app/checkout/page.tsx
 "use client";
 
-import { AlertCircle, ChevronDown, ChevronUp, Lock, Shield, Truck, MessageCircle, Tag } from "lucide-react";
+import { AlertCircle, ChevronDown, ChevronUp, Lock, Shield, Truck, MessageCircle, Tag, BadgeCheck, RotateCcw } from "lucide-react";
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -96,7 +96,7 @@ function CheckoutInner() {
   const subtotal    = isOffer ? OFFER_PRICE : rawSubtotal;
   const total       = subtotal + shipping;
 
-  const deliveryTime = "Delivery in 7 days";
+  const deliveryTime = paymentMethod === "cod" ? "Delivery in 3–10 days (COD)" : "Delivery in 3–7 days (Prepaid)";
 
   const buildMessage = (data: FormData) => {
     const lines: string[] = [];
@@ -142,6 +142,7 @@ function CheckoutInner() {
     }
     lines.push(`*Total: ₹${total}*`);
     lines.push(`Payment: ${paymentMethod === "online" ? "Online (UPI/Card)" : "Cash on Delivery"}`);
+    lines.push(`Estimated delivery: ${paymentMethod === "cod" ? "3–10 days" : "3–7 days"}`);
 
     lines.push(``);
     lines.push(`_Thank you for shopping with ${APP_NAME}!_`);
@@ -333,7 +334,8 @@ function CheckoutInner() {
                       {APP_URL && (
                         <a
                           href={`${APP_URL}/product/${item.slug || item._id}`}
-                          target="_blank" rel="noopener noreferrer"
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center gap-1 mt-1 text-[10px] transition-colors"
                           style={{ color: "rgba(255,255,255,0.28)" }}
                           onMouseEnter={e => (e.currentTarget.style.color = GOLD)}
@@ -419,12 +421,22 @@ function CheckoutInner() {
                 <span>{deliveryTime}</span>
               </div>
 
-              <div className="mt-6 pt-5 flex items-center gap-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <div className="mt-2 flex items-start gap-2 text-[10px]" style={{ color: "rgba(255,255,255,0.22)" }}>
+                <span>Prepaid: 3–7 days · COD: 3–10 days</span>
+              </div>
+
+              <div className="mt-6 pt-5 flex flex-wrap items-center gap-4" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                 <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>
                   <Shield size={13} /><span>Secure</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>
                   <Lock size={13} /><span>SSL encrypted</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  <BadgeCheck size={13} /><span>100% Authentic</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px]" style={{ color: "rgba(255,255,255,0.25)" }}>
+                  <RotateCcw size={13} /><span>Easy Returns</span>
                 </div>
               </div>
             </div>
@@ -545,6 +557,9 @@ function CheckoutInner() {
                         <p className="text-xs mt-0.5" style={{ color: "rgba(0,0,0,0.4)" }}>
                           Pay via UPI / cards · Payment link shared on WhatsApp
                         </p>
+                        <p className="text-[11px] mt-1 font-semibold" style={{ color: GREEN }}>
+                          Delivery in 3–7 days
+                        </p>
                       </div>
                     </label>
 
@@ -572,6 +587,9 @@ function CheckoutInner() {
                             ? `Total ₹${OFFER_PRICE + OFFER_COD_FEE + shipping} · ₹100 advance + rest on delivery`
                             : "₹100 advance + rest on delivery"}
                         </p>
+                        <p className="text-[11px] mt-1 font-semibold" style={{ color: GREEN }}>
+                          Delivery in 3–10 days
+                        </p>
                       </div>
                     </label>
                   </div>
@@ -588,6 +606,26 @@ function CheckoutInner() {
                       </p>
                     </div>
                   )}
+                </div>
+
+                {/* Trust factors */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2 rounded-lg py-2.5 px-3" style={{ background: GREEN_BG, border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <Shield size={14} style={{ color: GREEN }} />
+                    <span className="text-[10px] font-semibold" style={{ color: "rgba(0,0,0,0.55)" }}>Secure Payment</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg py-2.5 px-3" style={{ background: GREEN_BG, border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <RotateCcw size={14} style={{ color: GREEN }} />
+                    <span className="text-[10px] font-semibold" style={{ color: "rgba(0,0,0,0.55)" }}>Easy Returns</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg py-2.5 px-3" style={{ background: GREEN_BG, border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <BadgeCheck size={14} style={{ color: GREEN }} />
+                    <span className="text-[10px] font-semibold" style={{ color: "rgba(0,0,0,0.55)" }}>100% Authentic</span>
+                  </div>
+                  <div className="flex items-center gap-2 rounded-lg py-2.5 px-3" style={{ background: GREEN_BG, border: "1px solid rgba(0,0,0,0.06)" }}>
+                    <Truck size={14} style={{ color: GREEN }} />
+                    <span className="text-[10px] font-semibold" style={{ color: "rgba(0,0,0,0.55)" }}>Pan India Delivery</span>
+                  </div>
                 </div>
 
                 {/* Policy */}

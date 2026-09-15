@@ -104,7 +104,7 @@ const ColorSelector = ({ colors, selectedColor, onColorSelect }: {
     </div>
   );
 };
-// ── Size Guide Modal ────────────────────────────────────────────
+
 // ── Size Guide Modal ────────────────────────────────────────────
 const SizeGuideModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
   if (!isOpen) return null;
@@ -154,12 +154,75 @@ const SizeGuideModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     </div>
   );
 };
+
+// ── Delivery Info ───────────────────────────────────────────────
+const DeliveryInfo = () => {
+  return (
+    <div
+      className="mt-7 rounded-lg p-4"
+      style={{ background: "#f2f4f0", border: "1px solid rgba(0,0,0,0.06)" }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <span className="block w-4 h-px" style={{ background: GOLD }} />
+        <span className="text-[9px] font-bold tracking-[0.25em] uppercase" style={{ color: "rgba(0,0,0,0.45)" }}>
+          Delivery
+        </span>
+      </div>
+      <div className="space-y-2">
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-semibold" style={{ color: "#2a2a2a" }}>
+            Prepaid Order
+          </span>
+          <span className="text-xs font-bold" style={{ color: GREEN }}>
+            3–7 days
+          </span>
+        </div>
+        <div className="flex justify-between items-center">
+          <span className="text-xs font-semibold" style={{ color: "#2a2a2a" }}>
+            Cash on Delivery
+          </span>
+          <span className="text-xs font-bold" style={{ color: GREEN }}>
+            3–10 days
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Trust Badges ────────────────────────────────────────────────
+const TrustBadges = () => {
+  const badges = [
+    { icon: "🔒", label: "Secure Payment" },
+    { icon: "↩️", label: "Easy Returns" },
+    { icon: "✅", label: "100% Authentic" },
+    { icon: "🚚", label: "Pan India Delivery" },
+  ];
+
+  return (
+    <div className="mt-5 grid grid-cols-2 gap-3">
+      {badges.map((badge) => (
+        <div
+          key={badge.label}
+          className="flex items-center gap-2 rounded-lg py-2.5 px-3"
+          style={{ background: "#ffffff", border: "1px solid rgba(0,0,0,0.07)" }}
+        >
+          <span className="text-sm">{badge.icon}</span>
+          <span className="text-[10px] font-semibold tracking-tight" style={{ color: "rgba(0,0,0,0.55)" }}>
+            {badge.label}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 // ── Main Component ─────────────────────────────────────────────
 const ProductDetailsClient = ({ product }: { product: any }) => {
   const [selectedSize, setSelectedSize] = React.useState<string | null>(null);
   const [selectedColor, setSelectedColor] = React.useState<string | null>(null);
   const [openSection, setOpenSection] = React.useState("description");
-const [showSizeGuide, setShowSizeGuide] = React.useState(false);
+  const [showSizeGuide, setShowSizeGuide] = React.useState(false);
   const availableSizes = product.sizes || [];
   const availableColors = product.colors || [];
 
@@ -235,14 +298,14 @@ const [showSizeGuide, setShowSizeGuide] = React.useState(false);
         )}
       </div>
 
-<SizeSelector
-  sizes={availableSizes}
-  selectedSize={selectedSize}
-  onSizeSelect={setSelectedSize}
-  onSizeGuideClick={() => setShowSizeGuide(true)}
-/>      <ColorSelector colors={availableColors} selectedColor={selectedColor} onColorSelect={setSelectedColor} />
+      <SizeSelector
+        sizes={availableSizes}
+        selectedSize={selectedSize}
+        onSizeSelect={setSelectedSize}
+        onSizeGuideClick={() => setShowSizeGuide(true)}
+      />
+      <ColorSelector colors={availableColors} selectedColor={selectedColor} onColorSelect={setSelectedColor} />
       <SizeGuideModal isOpen={showSizeGuide} onClose={() => setShowSizeGuide(false)} />
-
 
       <div className="mt-8">
         <AddToCartButton
@@ -254,6 +317,9 @@ const [showSizeGuide, setShowSizeGuide] = React.useState(false);
           showBuyNow
         />
       </div>
+
+      <DeliveryInfo />
+      <TrustBadges />
 
       {/* Accordion */}
       <div className="mt-10" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
