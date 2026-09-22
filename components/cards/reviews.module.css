@@ -1,0 +1,61 @@
+.marqueeWrapper {
+  width: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 5%,
+    black 95%,
+    transparent
+  );
+}
+
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  gap: 1.5rem;
+  animation: scroll 40s linear infinite;
+  
+}
+
+.marqueeWrapper:hover .marqueeTrack {
+  animation-play-state: paused;
+  aspect-ratio: 1080 / 1920;
+}
+
+.card {
+  position: relative;
+  flex: 0 0 auto;
+  width: 320px;
+  height: 220px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  background: #f5f5f5;
+  aspect-ratio: 1080 / 1920;
+}
+
+.image {
+  object-fit: cover;
+  aspect-ratio: 1080 / 1920;
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* Exactly half, since the track is the list duplicated once */
+    transform: translateX(-50%);
+  }
+}
+
+/* Slow down / adjust speed by editing the animation duration above.
+   Roughly: duration (s) ≈ number of images * 4-5 for a comfortable pace. */
