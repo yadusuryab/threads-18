@@ -3,16 +3,23 @@
 import React, { useState } from "react";
 
 // ── Brand tokens ───────────────────────────────────────────────
-const GREEN      = "#2D5016";
-const GOLD       = "#C8A84B";
-const GREEN_BG   = "#f2f4f0";
-const GREEN_MID  = "#eef1ea";
+const GREEN = "#2D5016";
+const GOLD = "#C8A84B";
+const GREEN_BG = "#f2f4f0";
+const GREEN_MID = "#eef1ea";
 
 const CHANNELS = [
   {
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-5 h-5">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="m2 3 10 8.5L22 3"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        className="w-5 h-5"
+      >
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="m2 3 10 8.5L22 3" />
       </svg>
     ),
     label: "Email",
@@ -22,8 +29,14 @@ const CHANNELS = [
   },
   {
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-5 h-5">
-        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 010 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        className="w-5 h-5"
+      >
+        <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 010 1.18 2 2 0 012 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z" />
       </svg>
     ),
     label: "Phone / WhatsApp",
@@ -33,13 +46,21 @@ const CHANNELS = [
   },
   {
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" className="w-5 h-5">
-        <rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.3"
+        className="w-5 h-5"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" />
+        <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
       </svg>
     ),
     label: "Instagram",
     value: "@threads_eighteen",
-    href: "https://instagram.com/threads_eighteen",
+    href: "https://www.instagram.com/threads_eighteenn/threads_eighteen",
     hint: "DM us anytime",
   },
 ];
@@ -47,8 +68,8 @@ const CHANNELS = [
 type FormState = "idle" | "sending" | "sent" | "error";
 
 export default function ContactPage() {
-  const [form, setForm]       = useState({ name: "", email: "", message: "" });
-  const [status, setStatus]   = useState<FormState>("idle");
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [status, setStatus] = useState<FormState>("idle");
   const [focused, setFocused] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,9 +88,8 @@ export default function ContactPage() {
   const fieldWrapper = (name: string) => ({
     borderRadius: 12,
     padding: "12px 16px",
-    border: focused === name
-      ? `1.5px solid ${GREEN}`
-      : "1.5px solid rgba(0,0,0,0.1)",
+    border:
+      focused === name ? `1.5px solid ${GREEN}` : "1.5px solid rgba(0,0,0,0.1)",
     background: focused === name ? GREEN_MID : "white",
     transition: "all 0.2s",
   });
@@ -138,24 +158,34 @@ export default function ContactPage() {
         .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
       `}</style>
 
-      <div className="co-root" style={{ background: GREEN_BG, minHeight: "100vh" }}>
+      <div
+        className="co-root"
+        style={{ background: GREEN_BG, minHeight: "100vh" }}
+      >
         <div className="max-w-5xl mx-auto px-5 sm:px-8 py-16 md:py-24">
-
           {/* ── Header ── */}
           <div className="mb-14 md:mb-20">
             {/* Eyebrow */}
             <div className="fade-up d1 flex items-center gap-2 mb-5">
               <span className="block w-5 h-px" style={{ background: GOLD }} />
-              <span className="text-[9px] font-bold tracking-[0.3em] uppercase" style={{ color: GOLD }}>
+              <span
+                className="text-[9px] font-bold tracking-[0.3em] uppercase"
+                style={{ color: GOLD }}
+              >
                 18 Threads — Get in Touch
               </span>
             </div>
 
             <h1
               className="fade-up d2 co-display leading-none"
-              style={{ fontSize: "clamp(52px, 10vw, 96px)", color: GREEN, letterSpacing: "0.01em" }}
+              style={{
+                fontSize: "clamp(52px, 10vw, 96px)",
+                color: GREEN,
+                letterSpacing: "0.01em",
+              }}
             >
-              WE'D LOVE TO<br />
+              WE'D LOVE TO
+              <br />
               <span style={{ color: GOLD }}>HEAR FROM YOU.</span>
             </h1>
 
@@ -163,16 +193,22 @@ export default function ContactPage() {
               className="fade-up d3 mt-5 text-sm md:text-base leading-relaxed max-w-sm"
               style={{ color: "rgba(0,0,0,0.42)" }}
             >
-              Questions, order support, or just want to say hi — we're quick to reply.
+              Questions, order support, or just want to say hi — we're quick to
+              reply.
             </p>
           </div>
 
           {/* Divider */}
-          <div className="mb-14" style={{ height: 1, background: `linear-gradient(to right, transparent, rgba(45,80,22,0.2), transparent)` }} />
+          <div
+            className="mb-14"
+            style={{
+              height: 1,
+              background: `linear-gradient(to right, transparent, rgba(45,80,22,0.2), transparent)`,
+            }}
+          />
 
           {/* ── Two-column ── */}
           <div className="grid md:grid-cols-[1fr_1.1fr] gap-10 md:gap-16 items-start">
-
             {/* LEFT — channels */}
             <div className="fade-up d3 space-y-3">
               <p
@@ -209,17 +245,28 @@ export default function ContactPage() {
                     >
                       {ch.label}
                     </p>
-                    <p className="text-sm font-bold truncate" style={{ color: GREEN }}>
+                    <p
+                      className="text-sm font-bold truncate"
+                      style={{ color: GREEN }}
+                    >
                       {ch.value}
                     </p>
-                    <p className="text-[11px] mt-0.5" style={{ color: "rgba(0,0,0,0.35)" }}>
+                    <p
+                      className="text-[11px] mt-0.5"
+                      style={{ color: "rgba(0,0,0,0.35)" }}
+                    >
                       {ch.hint}
                     </p>
                   </div>
 
-                  <svg viewBox="0 0 16 16" fill="none" stroke={GOLD} strokeWidth="1.5"
-                    className="w-4 h-4 shrink-0 mt-1 ml-auto opacity-50">
-                    <path d="M3 8h10M9 4l4 4-4 4"/>
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke={GOLD}
+                    strokeWidth="1.5"
+                    className="w-4 h-4 shrink-0 mt-1 ml-auto opacity-50"
+                  >
+                    <path d="M3 8h10M9 4l4 4-4 4" />
                   </svg>
                 </a>
               ))}
@@ -247,8 +294,14 @@ export default function ContactPage() {
                 <div className="relative">
                   {/* Form header */}
                   <div className="flex items-center gap-2 mb-7">
-                    <span className="block w-4 h-px" style={{ background: GOLD }} />
-                    <p className="text-[9px] font-bold tracking-[0.28em] uppercase" style={{ color: GOLD }}>
+                    <span
+                      className="block w-4 h-px"
+                      style={{ background: GOLD }}
+                    />
+                    <p
+                      className="text-[9px] font-bold tracking-[0.28em] uppercase"
+                      style={{ color: GOLD }}
+                    >
                       Send a Message
                     </p>
                   </div>
@@ -257,34 +310,58 @@ export default function ContactPage() {
                     <div className="text-center py-10">
                       <div
                         className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5"
-                        style={{ background: GREEN_MID, border: `1.5px solid rgba(45,80,22,0.2)`, color: GREEN }}
+                        style={{
+                          background: GREEN_MID,
+                          border: `1.5px solid rgba(45,80,22,0.2)`,
+                          color: GREEN,
+                        }}
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6">
-                          <polyline points="20 6 9 17 4 12"/>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          className="w-6 h-6"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
                         </svg>
                       </div>
                       <h3
                         className="co-display mb-2"
-                        style={{ fontSize: 36, color: GREEN, letterSpacing: "0.02em" }}
+                        style={{
+                          fontSize: 36,
+                          color: GREEN,
+                          letterSpacing: "0.02em",
+                        }}
                       >
                         Message Sent!
                       </h3>
-                      <p className="text-sm mb-7" style={{ color: "rgba(0,0,0,0.38)" }}>
+                      <p
+                        className="text-sm mb-7"
+                        style={{ color: "rgba(0,0,0,0.38)" }}
+                      >
                         We'll get back to you within 24 hours.
                       </p>
                       <button
                         onClick={() => setStatus("idle")}
                         className="text-[10px] font-bold tracking-[0.2em] uppercase pb-px transition-colors duration-200"
-                        style={{ color: GREEN, borderBottom: `1px solid rgba(45,80,22,0.3)` }}
-                        onMouseEnter={e => (e.currentTarget.style.borderColor = GREEN)}
-                        onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(45,80,22,0.3)")}
+                        style={{
+                          color: GREEN,
+                          borderBottom: `1px solid rgba(45,80,22,0.3)`,
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.borderColor = GREEN)
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.borderColor =
+                            "rgba(45,80,22,0.3)")
+                        }
                       >
                         Send another
                       </button>
                     </div>
                   ) : (
                     <form onSubmit={handleSubmit} className="space-y-4">
-
                       {/* Name */}
                       <div style={fieldWrapper("name")}>
                         <label
@@ -296,7 +373,9 @@ export default function ContactPage() {
                         <input
                           type="text"
                           value={form.name}
-                          onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, name: e.target.value }))
+                          }
                           onFocus={() => setFocused("name")}
                           onBlur={() => setFocused(null)}
                           placeholder="Arjun Menon"
@@ -316,7 +395,9 @@ export default function ContactPage() {
                         <input
                           type="email"
                           value={form.email}
-                          onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, email: e.target.value }))
+                          }
                           onFocus={() => setFocused("email")}
                           onBlur={() => setFocused(null)}
                           placeholder="you@example.com"
@@ -335,7 +416,9 @@ export default function ContactPage() {
                         </label>
                         <textarea
                           value={form.message}
-                          onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((f) => ({ ...f, message: e.target.value }))
+                          }
                           onFocus={() => setFocused("message")}
                           onBlur={() => setFocused(null)}
                           placeholder="How can we help you?"
@@ -347,34 +430,70 @@ export default function ContactPage() {
 
                       {status === "error" && (
                         <p className="text-[11.5px] text-red-500">
-                          Something went wrong. Please try WhatsApp or email directly.
+                          Something went wrong. Please try WhatsApp or email
+                          directly.
                         </p>
                       )}
 
                       <button
                         type="submit"
-                        disabled={status === "sending" || !form.name || !form.email || !form.message}
+                        disabled={
+                          status === "sending" ||
+                          !form.name ||
+                          !form.email ||
+                          !form.message
+                        }
                         className="submit-btn mt-2"
                       >
                         {status === "sending" ? (
                           <>
-                            <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                              <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeOpacity="0.25"/>
-                              <path d="M12 2a10 10 0 0110 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <svg
+                              className="animate-spin w-4 h-4"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                            >
+                              <circle
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeOpacity="0.25"
+                              />
+                              <path
+                                d="M12 2a10 10 0 0110 10"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                              />
                             </svg>
                             Sending…
                           </>
                         ) : (
                           <>
                             Send Message
-                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                              <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <svg
+                              width="14"
+                              height="14"
+                              viewBox="0 0 14 14"
+                              fill="none"
+                            >
+                              <path
+                                d="M2 7h10M8 3l4 4-4 4"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
                             </svg>
                           </>
                         )}
                       </button>
 
-                      <p className="text-[10.5px] text-center leading-relaxed" style={{ color: "rgba(0,0,0,0.3)" }}>
+                      <p
+                        className="text-[10.5px] text-center leading-relaxed"
+                        style={{ color: "rgba(0,0,0,0.3)" }}
+                      >
                         Or reach us faster on{" "}
                         <a
                           href="https://wa.me/918139865988"
@@ -384,10 +503,10 @@ export default function ContactPage() {
                           style={{ color: GREEN }}
                         >
                           WhatsApp
-                        </a>
-                        {" "}or{" "}
+                        </a>{" "}
+                        or{" "}
                         <a
-                          href="https://instagram.com/threads_eighteen"
+                          href="https://www.instagram.com/threads_eighteenn/threads_eighteen"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="font-bold transition-opacity hover:opacity-70"
@@ -401,7 +520,6 @@ export default function ContactPage() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
