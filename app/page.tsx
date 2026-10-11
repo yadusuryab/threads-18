@@ -13,6 +13,7 @@ import { Zap } from "lucide-react";
 import OfferBanner from "@/components/cards/offer-banner";
 import Jersey3D from "@/components/sections/3d-jersey";
 import ReviewsTeaser from "@/components/sections/rt";
+import ReviewComponent from "@/components/cards/reviews-c";
 
 export default async function Home() {
   const [homeProducts, trendingProducts] = await Promise.all([
@@ -25,10 +26,9 @@ export default async function Home() {
       {/* 1 ── Hero carousel */}
       <Hero />
 
-<ReviewsTeaser/>
       {/* 2 ── Scrolling promo ticker */}
       <MarqueeStrip />
-      <BrandsMarquee />
+      {/* <BrandsMarquee /> */}
        {/* ── BOGO Offer Banner ── */}
        {/* <Jersey3D/> */}
     {/* <OfferBanner/> */}
@@ -45,6 +45,7 @@ export default async function Home() {
         showViewAll={true}
         deskCols={4}
       />
+<ReviewComponent/>
 
      
 

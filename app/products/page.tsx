@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/queries/product";
-import { Filter, X, Search, SlidersHorizontal, ChevronDown, Star, Zap, TrendingUp } from "lucide-react";
+import { X, Search, SlidersHorizontal, ChevronDown, Star, Zap, TrendingUp } from "lucide-react";
 import ProductsSection from "@/components/sections/products";
 import { Filters } from "@/components/product/filters";
 
@@ -26,7 +26,6 @@ function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
       exit={{ opacity: 0, scale: 0.85 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-white bg-black tracking-wide uppercase"
-     
     >
       {label}
       <button
@@ -62,9 +61,7 @@ function SortSheet({
             className="fixed bottom-0 left-0 right-0 z-50 px-4 pt-5 pb-10"
             style={{ background: "var(--background)", borderTop: "3px solid var(--sport-accent)" }}
           >
-            {/* Handle */}
-            <div className="w-8 h-[3px] mx-auto mb-6"
-              style={{ background: "var(--sport-accent)" }} />
+            <div className="w-8 h-[3px] mx-auto mb-6" style={{ background: "var(--sport-accent)" }} />
 
             <div className="flex items-center gap-2 mb-5 px-1">
               <Zap className="w-3 h-3 fill-current" style={{ color: "var(--sport-accent)" }} />
@@ -122,7 +119,6 @@ function StickySearchBar({
         boxShadow: focused ? `0 0 0 1px var(--sport-accent)` : undefined,
       }}
     >
-      {/* Search input */}
       <div
         className="flex items-center gap-2 px-3.5 py-2.5 transition-all duration-200"
         style={{
@@ -156,7 +152,6 @@ function StickySearchBar({
         </AnimatePresence>
       </div>
 
-      {/* Controls row */}
       <div className="flex gap-2 mt-2.5">
         <button
           onClick={onOpenFilters}
@@ -169,9 +164,7 @@ function StickySearchBar({
           <SlidersHorizontal className="w-3.5 h-3.5" />
           Filters
           {filterCount > 0 && (
-            <span
-              className="w-4 h-4 text-[10px]  flex items-center bg-black text-white justify-center"
-            >
+            <span className="w-4 h-4 text-[10px] flex items-center bg-black text-white justify-center">
               {filterCount}
             </span>
           )}
@@ -190,6 +183,65 @@ function StickySearchBar({
   );
 }
 
+// ─── Infinite scroll footer ───────────────────────────────────────────────────
+function LoadMoreFooter({
+  loadingMore, hasNextPage, hasItems, error, onRetry,
+}: {
+  loadingMore: boolean; hasNextPage: boolean; hasItems: boolean;
+  error: string | null; onRetry: () => void;
+}) {
+  if (!hasItems) return null;
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10">
+        <p className="text-xs font-bold tracking-widest uppercase"
+          style={{ color: "var(--muted-foreground)" }}>
+          Couldn't load more
+        </p>
+        <button
+          onClick={onRetry}
+          className="px-5 py-2.5 text-[10px] font-black tracking-[0.25em] uppercase"
+          style={{ background: "var(--sport-accent)", color: "var(--foreground)" }}
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (loadingMore) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-10">
+        {[0, 1, 2].map((i) => (
+          <motion.span
+            key={i}
+            className="w-2 h-2"
+            style={{ background: "var(--sport-accent)" }}
+            animate={{ opacity: [0.3, 1, 0.3], y: [0, -4, 0] }}
+            transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.15 }}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (!hasNextPage) {
+    return (
+      <div className="flex items-center justify-center gap-3 py-10">
+        <div className="h-px w-10" style={{ background: "var(--border)" }} />
+        <p className="text-[10px] font-black tracking-[0.3em] uppercase"
+          style={{ color: "var(--muted-foreground)" }}>
+          You've seen it all
+        </p>
+        <div className="h-px w-10" style={{ background: "var(--border)" }} />
+      </div>
+    );
+  }
+
+  return <div className="py-10" />;
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 function ProductsPageComponent() {
   const router = useRouter();
@@ -197,10 +249,15 @@ function ProductsPageComponent() {
 
   const [products, setProducts]               = useState<Product[]>([]);
   const [loading, setLoading]                 = useState(true);
+  const [loadingMore, setLoadingMore]         = useState(false);
   const [error, setError]                     = useState<string | null>(null);
   const [categories, setCategories]           = useState<Array<{ _id: string; name: string; slug: string }>>([]);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [sortOpen, setSortOpen]               = useState(false);
+
+  const sentinelRef   = useRef<HTMLDivElement>(null);
+  const requestIdRef  = useRef(0);
+  const fetchingRef   = useRef(false);
 
   const [availableFilters, setAvailableFilters] = useState({
     sizes:       [] as string[],
@@ -211,13 +268,14 @@ function ProductsPageComponent() {
     maxPrice:    0,
   });
 
+  // Page always starts at 1 (infinite scroll — page is not kept in the URL)
   const [filters, setFilters] = useState({
     q:         searchParams.get("q")        || "",
     minPrice:  parseInt(searchParams.get("minPrice") || "0"),
     maxPrice:  parseInt(searchParams.get("maxPrice") || "50000"),
     category:  searchParams.get("category") || "",
     sort:      searchParams.get("sort")     || "newest",
-    page:      parseInt(searchParams.get("page") || "1"),
+    page:      1,
     limit:     12,
     sizes:     searchParams.get("sizes")?.split(",").filter(Boolean)    || [],
     colors:    searchParams.get("colors")?.split(",").filter(Boolean)   || [],
@@ -231,6 +289,9 @@ function ProductsPageComponent() {
 
   const [pagination, setPagination] = useState({ total: 0, hasNextPage: false });
 
+  // Key that changes only when a real filter changes (not on page increments)
+  const filterKey = JSON.stringify({ ...filters, page: 0 });
+
   // Fetch categories
   useEffect(() => {
     fetch("/api/categories")
@@ -239,7 +300,7 @@ function ProductsPageComponent() {
       .catch(() => {});
   }, []);
 
-  // Sync URL
+  // Sync URL (page excluded)
   useEffect(() => {
     const p = new URLSearchParams();
     if (filters.q)                       p.set("q",        filters.q);
@@ -247,7 +308,6 @@ function ProductsPageComponent() {
     if (filters.maxPrice < 50000)        p.set("maxPrice", filters.maxPrice.toString());
     if (filters.category)                p.set("category", filters.category);
     if (filters.sort !== "newest")       p.set("sort",     filters.sort);
-    if (filters.page > 1)                p.set("page",     filters.page.toString());
     if (filters.sizes.length)            p.set("sizes",    filters.sizes.join(","));
     if (filters.colors.length)           p.set("colors",   filters.colors.join(","));
     if (filters.features.length)         p.set("features", filters.features.join(","));
@@ -257,19 +317,27 @@ function ProductsPageComponent() {
     if (!filters.inStock)                p.set("inStock",  "false");
     if (filters.onSale)                  p.set("onSale",   "true");
     router.replace(`/products?${p.toString()}`, { scroll: false });
-  }, [filters, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterKey, router]);
 
-  // Fetch products
-  const fetchProducts = async () => {
+  // Fetch products (page 1 replaces, page > 1 appends)
+  const fetchProducts = async (page: number) => {
+    const reqId = ++requestIdRef.current;
+    const isFirst = page === 1;
+    fetchingRef.current = true;
+
     try {
-      setLoading(true);
+      if (isFirst) setLoading(true);
+      else setLoadingMore(true);
+      setError(null);
+
       const p = new URLSearchParams();
       if (filters.q)          p.append("q",          filters.q);
       p.append("minPrice",    filters.minPrice.toString());
       p.append("maxPrice",    filters.maxPrice.toString());
       if (filters.category)   p.append("category",   filters.category);
       p.append("sort",        filters.sort);
-      p.append("page",        filters.page.toString());
+      p.append("page",        page.toString());
       p.append("limit",       filters.limit.toString());
       if (filters.sizes.length)    p.append("sizes",    filters.sizes.join(","));
       if (filters.colors.length)   p.append("colors",   filters.colors.join(","));
@@ -283,55 +351,91 @@ function ProductsPageComponent() {
       const res  = await fetch(`/api/product?${p.toString()}`);
       const data = await res.json();
 
+      // Ignore stale responses
+      if (reqId !== requestIdRef.current) return;
+
       if (data.success) {
-        setProducts(data.data);
+        setProducts((prev) => {
+          if (isFirst) return data.data;
+          const seen = new Set(prev.map((x: any) => x._id));
+          return [...prev, ...data.data.filter((x: any) => !seen.has(x._id))];
+        });
         setPagination({ total: data.pagination.total, hasNextPage: data.pagination.hasNextPage });
-
-        if (data.data.length > 0) {
-          const sizes    = new Set<string>();
-          const colors   = new Set<string>();
-          const features = new Set<string>();
-          const brands   = new Set<string>();
-          const brandCounts: Record<string, number> = {};
-          let maxPrice = 0;
-
-          data.data.forEach((product: any) => {
-            product.sizes?.forEach((s: string) => sizes.add(s));
-            product.colors?.forEach((c: string) => colors.add(c));
-            product.features?.forEach((f: string) => features.add(f));
-
-            // Brand comes from the resolved reference now
-            const brandName = product.brand?.name || product.brand;
-            const brandSlug = product.brand?.slug  || brandName;
-            if (brandSlug) {
-              brands.add(brandSlug);
-              brandCounts[brandSlug] = (brandCounts[brandSlug] || 0) + 1;
-            }
-
-            const price = product.salesPrice || product.price || 0;
-            if (price > maxPrice) maxPrice = price;
-          });
-
-          setAvailableFilters({
-            sizes:       Array.from(sizes).sort(),
-            colors:      Array.from(colors).sort(),
-            features:    Array.from(features).sort(),
-            brands:      Array.from(brands).sort(),
-            brandCounts,
-            maxPrice:    Math.ceil(maxPrice / 1000) * 1000,
-          });
-        }
       } else {
         throw new Error(data.message || "Failed to fetch products");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
+      if (reqId === requestIdRef.current) {
+        setError(err instanceof Error ? err.message : "Unknown error");
+      }
     } finally {
-      setLoading(false);
+      if (reqId === requestIdRef.current) {
+        setLoading(false);
+        setLoadingMore(false);
+        fetchingRef.current = false;
+      }
     }
   };
 
-  useEffect(() => { fetchProducts(); }, [filters]);
+  useEffect(() => { fetchProducts(filters.page); /* eslint-disable-next-line */ }, [filters]);
+
+  // Derive available filter options from everything loaded so far
+  useEffect(() => {
+    if (products.length === 0) return;
+
+    const sizes    = new Set<string>();
+    const colors   = new Set<string>();
+    const features = new Set<string>();
+    const brands   = new Set<string>();
+    const brandCounts: Record<string, number> = {};
+    let maxPrice = 0;
+
+    products.forEach((product: any) => {
+      product.sizes?.forEach((s: string) => sizes.add(s));
+      product.colors?.forEach((c: string) => colors.add(c));
+      product.features?.forEach((f: string) => features.add(f));
+
+      const brandName = product.brand?.name || product.brand;
+      const brandSlug = product.brand?.slug  || brandName;
+      if (brandSlug) {
+        brands.add(brandSlug);
+        brandCounts[brandSlug] = (brandCounts[brandSlug] || 0) + 1;
+      }
+
+      const price = product.salesPrice || product.price || 0;
+      if (price > maxPrice) maxPrice = price;
+    });
+
+    setAvailableFilters({
+      sizes:       Array.from(sizes).sort(),
+      colors:      Array.from(colors).sort(),
+      features:    Array.from(features).sort(),
+      brands:      Array.from(brands).sort(),
+      brandCounts,
+      maxPrice:    Math.ceil(maxPrice / 1000) * 1000,
+    });
+  }, [products]);
+
+  // ── Infinite scroll observer ──────────────────────────────────────────────
+  const loadNextPage = () => {
+    if (fetchingRef.current) return;
+    fetchingRef.current = true;
+    setFilters((prev) => ({ ...prev, page: prev.page + 1 }));
+  };
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !pagination.hasNextPage || loading || loadingMore || error) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) loadNextPage();
+      },
+      { rootMargin: "400px 0px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [pagination.hasNextPage, loading, loadingMore, error, products.length]);
 
   // ── Filter helpers ────────────────────────────────────────────────────────
   const handleFilterChange = (key: string, value: any) =>
@@ -375,11 +479,6 @@ function ProductsPageComponent() {
     return n;
   };
 
-  const handlePageChange = (p: number) => {
-    setFilters((prev) => ({ ...prev, page: p }));
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const activeFilterCount = getActiveFilterCount();
 
   // ── Active chips ──────────────────────────────────────────────────────────
@@ -397,7 +496,7 @@ function ProductsPageComponent() {
     ...(!filters.inStock    ? [{ label: "All stock", onRemove: () => handleToggleFilter("inStock") }]   : []),
   ];
 
-  const totalPages = Math.ceil(pagination.total / filters.limit);
+  const showFullError = !!error && products.length === 0;
 
   return (
     <div className="min-h-screen" style={{ background: "var(--background)" }}>
@@ -416,7 +515,6 @@ function ProductsPageComponent() {
 
       {/* ── Desktop header ── */}
       <div className="hidden md:block max-w-[1440px] mx-auto px-6 pt-8 pb-0">
-        {/* Accent bar */}
         <div className="h-[3px] w-10 mb-6" style={{ background: "var(--sport-accent)" }} />
 
         <div className="flex items-end justify-between mb-6">
@@ -437,13 +535,12 @@ function ProductsPageComponent() {
             {pagination.total > 0 && (
               <p className="text-xs font-bold tracking-widest uppercase mt-1"
                 style={{ color: "var(--muted-foreground)" }}>
-                {pagination.total} items
+                {products.length} of {pagination.total} items
               </p>
             )}
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Desktop search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
                 style={{ color: "var(--muted-foreground)" }} />
@@ -460,7 +557,6 @@ function ProductsPageComponent() {
               />
             </div>
 
-            {/* Desktop sort */}
             <select
               value={filters.sort}
               onChange={(e) => handleFilterChange("sort", e.target.value)}
@@ -513,7 +609,6 @@ function ProductsPageComponent() {
 
           {/* Desktop sidebar */}
           <aside className="hidden md:block w-64 shrink-0">
-            {/* Sidebar label */}
             <div className="flex items-center gap-2 mb-5 pb-3"
               style={{ borderBottom: "2px solid var(--sport-accent)" }}>
               <SlidersHorizontal className="w-3.5 h-3.5" style={{ color: "var(--sport-accent)" }} />
@@ -543,15 +638,14 @@ function ProductsPageComponent() {
 
           {/* Product grid */}
           <main className="flex-1 min-w-0">
-            {/* Mobile result count */}
             <div className="flex items-center justify-between mb-4 md:hidden">
               <p className="text-[10px] font-black tracking-widest uppercase"
                 style={{ color: "var(--muted-foreground)" }}>
-                {loading ? "Loading…" : `${pagination.total} products`}
+                {loading ? "Loading…" : `${products.length} of ${pagination.total} products`}
               </p>
             </div>
 
-            {error ? (
+            {showFullError ? (
               <motion.div
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
                 className="flex flex-col items-center justify-center py-20 text-center"
@@ -566,7 +660,7 @@ function ProductsPageComponent() {
                 </p>
                 <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>{error}</p>
                 <button
-                  onClick={fetchProducts}
+                  onClick={() => fetchProducts(1)}
                   className="mt-5 px-5 py-2.5 text-[10px] font-black tracking-[0.25em] uppercase transition-all hover:opacity-80"
                   style={{ background: "var(--sport-accent)", color: "var(--foreground)" }}
                 >
@@ -575,11 +669,13 @@ function ProductsPageComponent() {
               </motion.div>
             ) : (
               <>
+                {/* Key excludes page, so appended items don't re-trigger the fade */}
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={`${filters.page}-${filters.sort}-${filters.q}`}
+                    key={filterKey}
                     initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }} transition={{ duration: 0.2 }}
+                    style={{ opacity: loading && products.length > 0 ? 0.5 : undefined }}
                   >
                     <ProductsSection
                       products={products}
@@ -595,64 +691,16 @@ function ProductsPageComponent() {
                   </motion.div>
                 </AnimatePresence>
 
-                {/* ── Pagination ── */}
-                {pagination.total > 0 && (
-                  <motion.div
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
-                    className="flex items-center justify-center gap-1.5 mt-12 pb-6"
-                  >
-                    {/* Prev */}
-                    <button
-                      disabled={filters.page === 1}
-                      onClick={() => handlePageChange(filters.page - 1)}
-                      className="w-9 h-9 flex items-center justify-center text-sm font-bold
-                        disabled:opacity-25 disabled:pointer-events-none transition-all active:scale-95"
-                      style={{
-                        border: "1px solid var(--border)",
-                        color: "var(--muted-foreground)",
-                      }}
-                    >
-                      ‹
-                    </button>
+                {/* Sentinel: triggers the next page */}
+                <div ref={sentinelRef} aria-hidden="true" className="h-px w-full" />
 
-                    {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                      let pageNum = filters.page <= 3
-                        ? i + 1
-                        : filters.page >= totalPages - 2
-                          ? totalPages - 4 + i
-                          : filters.page - 2 + i;
-                      const isActive = filters.page === pageNum;
-                      return (
-                        <button
-                          key={i}
-                          onClick={() => handlePageChange(pageNum)}
-                          className="w-9 h-9 text-sm font-black transition-all active:scale-95"
-                          style={{
-                            background: isActive ? "var(--sport-accent)" : "transparent",
-                            color: isActive ? "var(--foreground)" : "var(--muted-foreground)",
-                            border: isActive ? "none" : "1px solid var(--border)",
-                          }}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-
-                    {/* Next */}
-                    <button
-                      disabled={!pagination.hasNextPage}
-                      onClick={() => handlePageChange(filters.page + 1)}
-                      className="w-9 h-9 flex items-center justify-center text-sm font-bold
-                        disabled:opacity-25 disabled:pointer-events-none transition-all active:scale-95"
-                      style={{
-                        border: "1px solid var(--border)",
-                        color: "var(--muted-foreground)",
-                      }}
-                    >
-                      ›
-                    </button>
-                  </motion.div>
-                )}
+                <LoadMoreFooter
+                  loadingMore={loadingMore}
+                  hasNextPage={pagination.hasNextPage}
+                  hasItems={products.length > 0}
+                  error={error}
+                  onRetry={() => fetchProducts(filters.page)}
+                />
               </>
             )}
           </main>
@@ -675,7 +723,6 @@ function ProductsPageComponent() {
               className="fixed inset-y-0 right-0 z-50 w-full max-w-xs overflow-y-auto overscroll-contain md:hidden"
               style={{ background: "var(--background)" }}
             >
-              {/* Sheet header */}
               <div
                 className="sticky top-0 px-5 py-4 flex items-center justify-between"
                 style={{
@@ -732,7 +779,6 @@ function ProductsPageComponent() {
                 />
               </div>
 
-              {/* Apply button */}
               <div
                 className="sticky bottom-0 p-4"
                 style={{ background: "var(--background)", borderTop: "1px solid var(--border)" }}
@@ -765,7 +811,6 @@ function ProductsPageComponent() {
 function Skeleton() {
   return (
     <div className="min-h-screen" style={{ background: "var(--background)" }}>
-      {/* Mobile bar skeleton */}
       <div className="sticky top-0 z-30 px-4 py-3 md:hidden"
         style={{ background: "var(--background)", borderBottom: "1px solid var(--border)" }}>
         <div className="h-10 animate-pulse" style={{ background: "var(--muted)" }} />

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Brand } from '@/components/types/brand';
-import { Button } from '../ui/button';
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { Brand } from "@/components/types/brand";
+import { Button } from "../ui/button";
 
 interface BrandsGridProps {
   title?: string;
@@ -14,8 +14,8 @@ interface BrandsGridProps {
 }
 
 export default function BrandsGrid({
-  title = 'Shop by Club',
-  subtitle = 'Official Kits',
+  title = "Shop by Club",
+  subtitle = "Official Kits",
   showFeaturedOnly = false,
   limit,
 }: BrandsGridProps) {
@@ -31,14 +31,14 @@ export default function BrandsGrid({
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const res = await fetch('/api/brands');
-        if (!res.ok) throw new Error('Failed to fetch brands');
+        const res = await fetch("/api/brands");
+        if (!res.ok) throw new Error("Failed to fetch brands");
         const data: Brand[] = await res.json();
         let filtered = showFeaturedOnly ? data.filter((b) => b.featured) : data;
         if (limit) filtered = filtered.slice(0, limit);
         setBrands(filtered);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Something went wrong');
+        setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setLoading(false);
       }
@@ -57,19 +57,22 @@ export default function BrandsGrid({
     const el = scrollRef.current;
     if (!el) return;
     updateScrollState();
-    el.addEventListener('scroll', updateScrollState);
-    window.addEventListener('resize', updateScrollState);
+    el.addEventListener("scroll", updateScrollState);
+    window.addEventListener("resize", updateScrollState);
     return () => {
-      el.removeEventListener('scroll', updateScrollState);
-      window.removeEventListener('resize', updateScrollState);
+      el.removeEventListener("scroll", updateScrollState);
+      window.removeEventListener("resize", updateScrollState);
     };
   }, [brands]);
 
-  const scroll = (direction: 'left' | 'right') => {
+  const scroll = (direction: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
-    const cardWidth = el.querySelector('article')?.offsetWidth ?? 220;
-    el.scrollBy({ left: direction === 'left' ? -cardWidth * 2 : cardWidth * 2, behavior: 'smooth' });
+    const cardWidth = el.querySelector("article")?.offsetWidth ?? 220;
+    el.scrollBy({
+      left: direction === "left" ? -cardWidth * 2 : cardWidth * 2,
+      behavior: "smooth",
+    });
   };
 
   if (error) {
@@ -80,35 +83,33 @@ export default function BrandsGrid({
     );
   }
 
-  const titleParts = title.split(' ');
+  const titleParts = title.split(" ");
   const lastWord = titleParts.pop();
-  const firstWords = titleParts.join(' ');
+  const firstWords = titleParts.join(" ");
 
   return (
-    <section className="w-full py-10 px-4 bg-[#0a0a0a]">
-
+    <section className="w-full py-10 px-4 bg-primary">
       {/* ── Header ── */}
       <div className="max-w-7xl mx-auto mb-8 flex items-end justify-between gap-4">
         <div>
           {/* Eyebrow */}
           <div className="flex items-center gap-2 mb-3">
             <span className="w-1.5 h-1.5 rounded-full bg-green-600 flex-shrink-0" />
-            <span className="text-[9px] font-black tracking-[0.35em] uppercase text-green-600">
+            <span className="text-lg font-serif tracking-tighter text-white italic">
               {subtitle}
             </span>
           </div>
           {/* Title */}
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter uppercase leading-none text-white">
-            {firstWords}{' '}
-            <span className="text-green-500">{lastWord}</span>
+          <h2 className="text-3xl md:text-2xl  tracking-tighter uppercase leading-none text-white">
+            {firstWords}{" "}
+            <span className="text-secondary font-black">{lastWord}</span>
           </h2>
-          <div className="mt-3 h-[3px] w-9 bg-green-600" />
         </div>
 
         {/* Scroll arrows — desktop */}
         <div className="hidden md:flex items-center gap-2">
-          {(['left', 'right'] as const).map((dir) => {
-            const active = dir === 'left' ? canScrollLeft : canScrollRight;
+          {(["left", "right"] as const).map((dir) => {
+            const active = dir === "left" ? canScrollLeft : canScrollRight;
             return (
               <button
                 key={dir}
@@ -117,16 +118,29 @@ export default function BrandsGrid({
                 aria-label={`Scroll ${dir}`}
                 className="w-9 h-9 flex items-center justify-center transition-all duration-200 disabled:opacity-20 disabled:pointer-events-none"
                 style={{
-                  border: `1px solid ${active ? '#16a34a' : 'rgba(255,255,255,0.15)'}`,
-                  color: active ? '#16a34a' : 'rgba(255,255,255,0.3)',
-                  background: 'transparent',
+                  border: `1px solid ${active ? "#16a34a" : "rgba(255,255,255,0.15)"}`,
+                  color: active ? "#16a34a" : "rgba(255,255,255,0.3)",
+                  background: "transparent",
                 }}
               >
                 <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
-                  {dir === 'left'
-                    ? <path d="M9 2L5 7l4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    : <path d="M5 2l4 5-4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  }
+                  {dir === "left" ? (
+                    <path
+                      d="M9 2L5 7l4 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M5 2l4 5-4 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </button>
             );
@@ -136,33 +150,49 @@ export default function BrandsGrid({
 
       {/* ── Scrollable strip ── */}
       <div className="relative max-w-7xl mx-auto">
-
         {/* Mobile fade + arrow */}
-        {(['left', 'right'] as const).map((dir) => {
-          const active = dir === 'left' ? canScrollLeft : canScrollRight;
+        {(["left", "right"] as const).map((dir) => {
+          const active = dir === "left" ? canScrollLeft : canScrollRight;
           return (
             <div
               key={dir}
-              className={`md:hidden absolute ${dir === 'left' ? 'left-0' : 'right-0'} top-0 bottom-0 z-10
-                flex items-center transition-opacity duration-300 ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+              className={`md:hidden absolute ${dir === "left" ? "left-0" : "right-0"} top-0 bottom-0 z-10
+                flex items-center transition-opacity duration-300 ${active ? "opacity-100" : "opacity-0 pointer-events-none"}`}
             >
               <div
                 className={`absolute ${dir}-0 top-0 bottom-0 w-12`}
                 style={{
-                  background: `linear-gradient(to ${dir === 'left' ? 'right' : 'left'}, #0a0a0a, transparent)`,
+                  background: `linear-gradient(to ${dir === "left" ? "right" : "left"}, #0a0a0a, transparent)`,
                 }}
               />
               <button
                 onClick={() => scroll(dir)}
                 aria-label={`Scroll ${dir}`}
-                className={`relative z-10 ${dir === 'left' ? 'ml-1' : 'mr-1'} w-8 h-8 flex items-center justify-center`}
-                style={{ border: '1px solid rgba(255,255,255,0.15)', color: '#16a34a', background: 'transparent' }}
+                className={`relative z-10 ${dir === "left" ? "ml-1" : "mr-1"} w-8 h-8 flex items-center justify-center`}
+                style={{
+                  border: "1px solid rgba(255,255,255,0.15)",
+                  color: "#16a34a",
+                  background: "transparent",
+                }}
               >
                 <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-                  {dir === 'left'
-                    ? <path d="M9 2L5 7l4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    : <path d="M5 2l4 5-4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  }
+                  {dir === "left" ? (
+                    <path
+                      d="M9 2L5 7l4 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  ) : (
+                    <path
+                      d="M5 2l4 5-4 5"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
                 </svg>
               </button>
             </div>
@@ -172,176 +202,197 @@ export default function BrandsGrid({
         {/* Cards */}
         <div
           ref={scrollRef}
-          className="flex gap-0 overflow-x-auto scrollbar-hide"
+          className="flex gap-2 overflow-x-auto scrollbar-hide"
           style={{
-            scrollSnapType: 'x mandatory',
-            WebkitOverflowScrolling: 'touch',
-            borderTop: '3px solid #16a34a',
-            borderBottom: '1px solid rgba(255,255,255,0.08)',
-            borderLeft: '1px solid rgba(255,255,255,0.08)',
-            borderRight: '1px solid rgba(255,255,255,0.08)',
+            scrollSnapType: "x mandatory",
+            WebkitOverflowScrolling: "touch",
+
           }}
-          onMouseLeave={() => { setHoveredId(null); }}
+          onMouseLeave={() => {
+            setHoveredId(null);
+          }}
         >
           {loading
             ? Array.from({ length: 6 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 w-[200px] min-h-[220px] animate-pulse"
-                  style={{ scrollSnapAlign: 'start', background: '#1a1a1a' }}
+                  className="flex-shrink-0 w-[200px]  min-h-[220px] animate-pulse"
+                  style={{ scrollSnapAlign: "start", background: "#1a1a1a" }}
                 />
               ))
             : brands.map((brand, idx) => {
-                const isHighlighted = hoveredId === brand._id || (!hoveredId && activeId === brand._id);
+                const isHighlighted =
+                  hoveredId === brand._id ||
+                  (!hoveredId && activeId === brand._id);
                 const isDimmed = (hoveredId || activeId) && !isHighlighted;
 
                 return (
-                  <Link key={brand._id} href={`/products?brands=${brand.slug?.current}`}>
-                    <article
-                      className="relative flex flex-col flex-shrink-0 w-[200px] p-4 transition-all duration-300 group cursor-pointer"
-                      style={{
-                        scrollSnapAlign: 'start',
-                        background: isHighlighted ? '#16a34a' : '#111111',
-                        opacity: isDimmed ? 0.35 : 1,
-                        borderRight: idx < brands.length - 1 ? '1px solid rgba(255,255,255,0.08)' : 'none',
-                        minHeight: 220,
-                      }}
-                      onMouseEnter={() => setHoveredId(brand._id)}
-                      onTouchStart={() =>
-                        setActiveId((prev) => (prev === brand._id ? null : brand._id))
-                      }
-                    >
-                      {/* Subtle pitch-line texture at top */}
-                      <div
-                        className="absolute top-0 left-0 right-0 h-px"
-                        style={{
-                          background: 'repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 6px, transparent 6px, transparent 12px)',
-                        }}
-                      />
+<Link
+  key={brand._id}
+  href={`/products?brands=${brand.slug?.current}`}
+  className="flex-shrink-0"
+  style={{ scrollSnapAlign: "start" }}
+>
+  <article
+    className="group relative w-[220px] h-[300px] overflow-hidden rounded-2xl cursor-pointer transition-all duration-500"
+    style={{
+      opacity: isDimmed ? 0.35 : 1,
+      transform: isHighlighted ? "translateY(-6px)" : "translateY(0)",
+      boxShadow: isHighlighted
+        ? "0 20px 40px -12px rgba(22,163,74,0.55), 0 0 0 1.5px #16a34a"
+        : "0 10px 30px -12px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)",
+      background: "#0b0f0c",
+    }}
+    onMouseEnter={() => setHoveredId(brand._id)}
+    onTouchStart={() =>
+      setActiveId((prev) => (prev === brand._id ? null : brand._id))
+    }
+  >
+    {/* BG layer: image fills card (blurred) */}
+    {brand.logo ? (
+      <Image
+        src={brand.logo}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="220px"
+        className="object-cover scale-125 blur-xl transition-transform duration-700 group-hover:scale-150"
+        style={{ filter: "blur(24px) saturate(1.3) brightness(0.8)" }}
+      />
+    ) : (
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 30% 20%, #16a34a 0%, #052e16 60%, #0b0f0c 100%)",
+        }}
+      />
+    )}
 
-                      {/* Featured badge */}
-                      {brand.featured && (
-                        <span
-                          className="absolute top-2.5 right-2.5 text-[7px] font-black tracking-[0.25em] uppercase px-2 py-0.5"
-                          style={{
-                            background: isHighlighted ? '#ffffff' : '#16a34a',
-                            color: isHighlighted ? '#16a34a' : '#ffffff',
-                          }}
-                        >
-                          Featured
-                        </span>
-                      )}
+    {/* Sharp logo on top */}
+    <div className="absolute inset-x-0 top-0 h-[58%] flex items-center justify-center p-8">
+      {brand.logo ? (
+        <Image
+          src={brand.logo}
+          alt={brand.logoAlt || brand.name}
+          fill
+          sizes="220px"
+          className="object-contain p-8 drop-shadow-2xl transition-transform duration-500 group-hover:scale-110"
+        />
+      ) : (
+        <span className="text-6xl font-black uppercase tracking-tighter text-white/80">
+          {brand.name.slice(0, 3)}
+        </span>
+      )}
+    </div>
 
-                      {/* Logo */}
-                      <div
-                        className="relative w-full mb-4 flex items-center justify-center flex-shrink-0 overflow-hidden"
-                        style={{
-                          height: 72,
-                          borderBottom: `1px solid ${isHighlighted ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.06)'}`,
-                          paddingBottom: 12,
-                        }}
-                      >
-                        {brand.logo ? (
-                          <Image
-                            src={brand.logo}
-                            alt={brand.logoAlt || brand.name}
-                            fill
-                            className="object-contain p-2 transition-all duration-300"
-                            style={{ filter: isHighlighted ? 'brightness(1.1)' : 'brightness(0.7)' }}
-                            sizes="200px"
-                          />
-                        ) : (
-                          <span
-                            className="text-2xl font-black uppercase leading-none tracking-tighter"
-                            style={{ color: isHighlighted ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.2)' }}
-                          >
-                            {brand.name.slice(0, 3)}
-                          </span>
-                        )}
-                      </div>
+    {/* Overlay gradient */}
+    <div
+      className="absolute inset-0 transition-opacity duration-500"
+      style={{
+        background: isHighlighted
+          ? "linear-gradient(to top, rgba(5,46,22,0.97) 0%, rgba(22,163,74,0.55) 45%, rgba(22,163,74,0.1) 100%)"
+          : "linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.55) 45%, rgba(0,0,0,0.15) 100%)",
+      }}
+    />
 
-                      {/* Body */}
-                      <div className="flex flex-col flex-1 gap-1">
-                        <h3
-                          className="text-sm font-black uppercase tracking-tight leading-snug"
-                          style={{ color: '#ffffff' }}
-                        >
-                          {brand.name}
-                        </h3>
+    {/* Pitch line texture */}
+    <div
+      className="absolute top-0 inset-x-0 h-px"
+      style={{
+        background:
+          "repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0, rgba(255,255,255,0.25) 6px, transparent 6px, transparent 12px)",
+      }}
+    />
 
-                        {(brand.country || brand.establishedYear) && (
-                          <p
-                            className="flex items-center gap-1.5 text-[9px] font-bold tracking-[0.15em] uppercase"
-                            style={{ color: isHighlighted ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.3)' }}
-                          >
-                            {brand.country && <span>{brand.country}</span>}
-                            {brand.country && brand.establishedYear && <span>·</span>}
-                            {brand.establishedYear && <span>Est. {brand.establishedYear}</span>}
-                          </p>
-                        )}
+    {/* Featured badge */}
+    {brand.featured && (
+      <span className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-[#16a34a] px-2.5 py-1 text-[9px] font-bold tracking-wide text-white shadow-lg">
+        <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2l2.9 6.3 6.9.8-5.1 4.7 1.4 6.8L12 17.3 5.9 20.6l1.4-6.8L2.2 9.1l6.9-.8L12 2z" />
+        </svg>
+        Featured
+      </span>
+    )}
 
-                        {brand.description && (
-                          <p
-                            className="mt-1 text-[0.7rem] leading-relaxed line-clamp-2"
-                            style={{
-                              color: isHighlighted ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.3)',
-                              fontFamily: '-apple-system, sans-serif',
-                              fontWeight: 400,
-                            }}
-                          >
-                            {brand.description}
-                          </p>
-                        )}
+    {/* Website button (no nested <a>) */}
+    {brand.website && (
+      <button
+        type="button"
+        aria-label="Visit website"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          window.open(brand.website, "_blank", "noopener,noreferrer");
+        }}
+        className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white/80 backdrop-blur-md transition-all duration-200 hover:bg-white hover:text-black"
+      >
+        <svg width="12" height="12" viewBox="0 0 13 13" fill="none">
+          <path
+            d="M5 2H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V8M8 1h4m0 0v4m0-4L5.5 7.5"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+    )}
 
-                        {/* Footer */}
-                        <div
-                          className="flex items-center justify-between mt-auto pt-3"
-                          style={{
-                            borderTop: `1px solid ${isHighlighted ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.06)'}`,
-                          }}
-                        >
-                          <span
-                            className="inline-flex items-center gap-1.5 text-[8px] font-black tracking-[0.2em] uppercase"
-                            style={{ color: isHighlighted ? '#ffffff' : '#16a34a' }}
-                          >
-                            View
-                            <svg width="11" height="11" viewBox="0 0 14 14" fill="none"
-                              className="transition-transform duration-200 group-hover:translate-x-0.5">
-                              <path d="M2.5 7h9M7.5 3l4 4-4 4" stroke="currentColor" strokeWidth="2"
-                                strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </span>
+    {/* Glass info panel */}
+    <div className="absolute inset-x-2 bottom-2 rounded-xl border border-white/10 bg-white/[0.07] p-3 backdrop-blur-md">
+      <h3 className="text-sm font-black uppercase leading-tight tracking-tight text-white">
+        {brand.name}
+      </h3>
 
-                          {brand.website && (
-                            <a
-                              href={brand.website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label="Visit website"
-                              onClick={(e) => e.stopPropagation()}
-                              className="flex items-center justify-center w-6 h-6 transition-all duration-200"
-                              style={{
-                                border: `1px solid ${isHighlighted ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.12)'}`,
-                                color: isHighlighted ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)',
-                              }}
-                            >
-                              <svg width="10" height="10" viewBox="0 0 13 13" fill="none">
-                                <path d="M5 2H2a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V8M8 1h4m0 0v4m0-4L5.5 7.5"
-                                  stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                              </svg>
-                            </a>
-                          )}
-                        </div>
-                      </div>
-                    </article>
-                  </Link>
+      {(brand.country || brand.establishedYear) && (
+        <p className="mt-0.5 flex items-center gap-1.5 text-[10px] font-semibold text-white/60">
+          {brand.country && <span>{brand.country}</span>}
+          {brand.country && brand.establishedYear && <span>•</span>}
+          {brand.establishedYear && <span>Est. {brand.establishedYear}</span>}
+        </p>
+      )}
+
+      {brand.description && (
+        <p
+          className="mt-1.5 text-[11px] leading-snug text-white/70 line-clamp-2"
+          style={{ fontFamily: "-apple-system, sans-serif" }}
+        >
+          {brand.description}
+        </p>
+      )}
+
+      <div className="mt-2.5 flex items-center justify-between">
+        <span className="text-[10px] font-bold tracking-wide text-white">
+          Shop products
+        </span>
+        <span
+          className="flex h-6 w-6 items-center justify-center rounded-full transition-transform duration-300 group-hover:translate-x-1"
+          style={{ background: isHighlighted ? "#ffffff" : "#16a34a" }}
+        >
+          <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+            <path
+              d="M2.5 7h9M7.5 3l4 4-4 4"
+              stroke={isHighlighted ? "#16a34a" : "#ffffff"}
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+      </div>
+    </div>
+  </article>
+</Link>
                 );
               })}
         </div>
       </div>
 
       {!loading && brands.length === 0 && (
-        <p className="text-center text-sm py-16 text-white/30">No brands found.</p>
+        <p className="text-center text-sm py-16 text-white/30">
+          No brands found.
+        </p>
       )}
     </section>
   );

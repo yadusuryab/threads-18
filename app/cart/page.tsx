@@ -337,7 +337,7 @@ function CartPage() {
                   </div>
                   <div className="flex justify-between text-sm" style={{ color: "rgba(0,0,0,0.45)" }}>
                     <span>Shipping</span>
-                    <span className="font-bold" style={{ color: GREEN }}>Free</span>
+                    <span className="font-bold" style={{ color: GREEN }}>₹60</span>
                   </div>
                   <div
                     className="pt-3 flex justify-between"
