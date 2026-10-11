@@ -40,7 +40,7 @@ export default async function Home() {
       {/* 4 ── New arrivals product grid */}
       <ProductsSection
         products={homeProducts}
-        title="New Arrivals"
+        title="BEST SELLERS"
         desc="Just landed"
         showViewAll={true}
         deskCols={4}
